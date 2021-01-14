@@ -244,6 +244,7 @@ private:
     RC_Channel *channel_yaw;
 
     AP_Logger logger;
+    bool once_init = 0;
 
     // flight modes convenience array
     AP_Int8 *flight_modes;

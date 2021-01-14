@@ -1,4 +1,5 @@
 #include "Copter.h"
+#include "Parameters.h"
 
 #if HAL_MAX_CAN_PROTOCOL_DRIVERS
  #include <AP_ToshibaCAN/AP_ToshibaCAN.h>
@@ -25,6 +26,18 @@ bool AP_Arming_Copter::pre_arm_checks(bool display_failure)
     set_pre_arm_check(passed);
     return passed;
 }
+// bool AP_Arming_Copter::pre_arm_param_check(bool display_failure){
+//     //parameter File Version Check 
+//     if (copter.g.param_file_v != 258){
+//         return false;
+
+//     }
+//     else
+//     {
+//         return true;
+//     }
+
+// }
 
 // perform pre-arm checks
 //  return true if the checks pass successfully
@@ -148,6 +161,14 @@ bool AP_Arming_Copter::board_voltage_checks(bool display_failure)
 
 bool AP_Arming_Copter::parameter_checks(bool display_failure)
 {
+
+    //parameter File Version Check 
+    if (copter.g.param_file_v != 258){
+        check_failed(ARMING_CHECK_PARAMETERS, display_failure,"WRONG PARAMETER FILE");
+        return false;
+    }
+    
+    
     // check various parameter values
     if ((checks_to_perform == ARMING_CHECK_ALL) || (checks_to_perform & ARMING_CHECK_PARAMETERS)) {
 
@@ -183,6 +204,9 @@ bool AP_Arming_Copter::parameter_checks(bool display_failure)
             check_failed(ARMING_CHECK_PARAMETERS, display_failure, "Check PILOT_SPEED_UP");
             return false;
         }
+
+        
+
 
         #if FRAME_CONFIG == HELI_FRAME
         if (copter.g2.frame_class.get() != AP_Motors::MOTOR_FRAME_HELI_QUAD &&
@@ -743,10 +767,14 @@ bool AP_Arming_Copter::arm_checks(AP_Arming::Method method)
 // mandatory checks that will be run if ARMING_CHECK is zero or arming forced
 bool AP_Arming_Copter::mandatory_checks(bool display_failure)
 {
+
     // call mandatory gps checks and update notify status because regular gps checks will not run
     bool result = mandatory_gps_checks(display_failure);
     AP_Notify::flags.pre_arm_gps_check = result;
+    
+    
 
+    
     // call mandatory alt check
     if (!alt_checks(display_failure)) {
         result = false;

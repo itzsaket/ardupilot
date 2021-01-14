@@ -56,6 +56,13 @@ const AP_Param::Info Copter::var_info[] = {
     // @Range: 1 255
     // @User: Advanced
     GSCALAR(sysid_my_gcs,   "SYSID_MYGCS",     255),
+    
+    // @Param: PARAM_FILE_V
+    // @DisplayName: PARAM FILE V
+    // @Description: Parameter File Version
+    // @Range: -32768 32767
+    // @User: Advanced
+    GSCALAR(param_file_v, "PARAM_FILE_V",     258),
 
     // @Param: PILOT_THR_FILT
     // @DisplayName: Throttle filter cutoff
@@ -1123,10 +1130,16 @@ const AP_Param::ConversionInfo conversion_table[] = {
     { Parameters::Parameters::k_param_ch12_option_old,   0,      AP_PARAM_INT8,  "RC12_OPTION" },
     { Parameters::k_param_compass_enabled_deprecated,    0,      AP_PARAM_INT8, "COMPASS_ENABLE" },
     { Parameters::k_param_arming,             2,     AP_PARAM_INT16,  "ARMING_CHECK" },
+    { Parameters::k_param_param_file_v,  0,     AP_PARAM_INT16,  "PARAM_FILE_V" }
 };
 
 void Copter::load_parameters(void)
 {
+
+
+    //gcs().send_parameter_value(g.my_new_parameter)
+
+
     if (!AP_Param::check_var_info()) {
         hal.console->printf("Bad var table\n");
         AP_HAL::panic("Bad var table");

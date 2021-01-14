@@ -377,9 +377,10 @@ public:
         k_param_vehicle = 257, // vehicle common block of parameters
 
         // the k_param_* space is 9-bits in size
+        k_param_param_file_v,       // new para
         // 511: reserved
     };
-
+    AP_Int16        param_file_v;                  // my new parameter's description goes here
     AP_Int16        format_version;
 
     // Telemetry control
@@ -481,10 +482,18 @@ public:
  */
 class ParametersG2 {
 public:
-    ParametersG2(void);
+    ParametersG2(void); 
+
+
+
+    //static const struct AP_Param::GroupInfo var_info[];
+
+
 
     // var_info for holding Parameter information
     static const struct AP_Param::GroupInfo var_info[];
+
+    AP_Int16 my_new_parameter;
 
     // altitude at which nav control can start in takeoff
     AP_Float wp_navalt_min;

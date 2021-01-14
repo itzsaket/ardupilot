@@ -28,6 +28,10 @@ public:
 
 protected:
 
+
+    // bool pre_arm_check_param(bool display_failure) override;        //param File check 
+    //bool pre_arm_param_check(bool display_failure);
+
     bool pre_arm_checks(bool display_failure) override;
     bool pre_arm_ekf_attitude_check();
     bool proximity_checks(bool display_failure) const override;

@@ -72,8 +72,11 @@
  *  Wiki: https://copter.ardupilot.org/
  *
  */
-
+                        //#include<string>
 #include "Copter.h"
+#include "config.h"
+#include "parameters.h"
+                         //using namespace std;
 
 #define FORCE_VERSION_H_INCLUDE
 #include "version.h"
@@ -83,6 +86,7 @@ const AP_HAL::HAL& hal = AP_HAL::get_HAL();
 
 #define SCHED_TASK(func, rate_hz, max_time_micros) SCHED_TASK_CLASS(Copter, &copter, func, rate_hz, max_time_micros)
 
+//gcs().send_text(MAV_SEVERITY_INFO, " Parameter value - %d " , (int16_t)g.my_new_parameter );
 /*
   scheduler table for fast CPUs - all regular tasks apart from the fast_loop()
   should be listed here, along with how often they should be called (in hz)
@@ -91,7 +95,11 @@ const AP_HAL::HAL& hal = AP_HAL::get_HAL();
 const AP_Scheduler::Task Copter::scheduler_tasks[] = {
     SCHED_TASK(rc_loop,              100,    130),
     SCHED_TASK(throttle_loop,         50,     75),
+    //SCHED_TASK( Param_config, 2, 10 ),
     SCHED_TASK_CLASS(AP_GPS, &copter.gps, update, 50, 200),
+    //SCHED_TASK( gcs().send_text(MAV_SEVERITY_INFO, " Parameter value - %d " , (int16_t)g.my_new_parameter );, 2 , 100000000000),
+
+
 #if OPTFLOW == ENABLED
     SCHED_TASK_CLASS(OpticalFlow,          &copter.optflow,             update,         200, 160),
 #endif
@@ -154,6 +162,7 @@ const AP_Scheduler::Task Copter::scheduler_tasks[] = {
 #endif
 #if LOGGING_ENABLED == ENABLED
     SCHED_TASK(ten_hz_logging_loop,   10,    350),
+    
     SCHED_TASK(twentyfive_hz_logging, 25,    110),
     SCHED_TASK_CLASS(AP_Logger,      &copter.logger,           periodic_tasks, 400, 300),
 #endif
@@ -211,13 +220,15 @@ void Copter::get_scheduler_tasks(const AP_Scheduler::Task *&tasks,
     tasks = &scheduler_tasks[0];
     task_count = ARRAY_SIZE(scheduler_tasks);
     log_bit = MASK_LOG_PM;
+    //gcs().send_text(MAV_SEVERITY_INFO, " Parameter value - %d " , (int16_t)g.my_new_parameter );
 }
 
 constexpr int8_t Copter::_failsafe_priorities[7];
 
-// Main loop - 400hz
 void Copter::fast_loop()
-{
+{   
+
+
     // update INS immediately to get current gyro data populated
     ins.update();
 
@@ -320,6 +331,15 @@ bool Copter::set_target_angle_and_climbrate(float roll_deg, float pitch_deg, flo
     return true;
 }
 
+
+//void Copter::param_version(){
+// void Param_config()
+// {
+//     //gcs().send_text(MAV_SEVERITY_INFO, "Parameter version - %d ", (int16_t)g.my_new_parameter);
+//     gcs().send_text(MAV_SEVERITY_INFO, " Parameter value - %d " , (int16_t)g.my_new_parameter );
+
+
+// }
 
 // rc_loops - reads user input from transmitter/receiver
 // called at 100hz
@@ -480,11 +500,14 @@ void Copter::three_hz_loop()
 // one_hz_loop - runs at 1Hz
 void Copter::one_hz_loop()
 {
+    
+
     if (should_log(MASK_LOG_ANY)) {
         Log_Write_Data(LogDataID::AP_STATE, ap.value);
     }
 
     arming.update();
+
 
     if (!motors->armed()) {
         // make it possible to change ahrs orientation at runtime during initial config
@@ -494,6 +517,7 @@ void Copter::one_hz_loop()
 
         // check the user hasn't updated the frame class or type
         motors->set_frame_class_and_type((AP_Motors::motor_frame_class)g2.frame_class.get(), (AP_Motors::motor_frame_type)g.frame_type.get());
+
 
 #if FRAME_CONFIG != HELI_FRAME
         // set all throttle channel settings
@@ -506,12 +530,25 @@ void Copter::one_hz_loop()
 
     // log terrain data
     terrain_logging();
+    //Parameter File Version GCS Info- 
+    //gcs().send_text(MAV_SEVERITY_INFO,"Parameter value -> %d " ,(int16_t)g.param_file_v );
+    if (!once_init){ 
+        gcs().send_text(MAV_SEVERITY_INFO, " Parameter value -> %d " ,(int16_t)g.param_file_v );
+        once_init=1;
+    }
+
 
 #if HAL_ADSB_ENABLED
     adsb.set_is_flying(!ap.land_complete);
 #endif
 
     AP_Notify::flags.flying = !ap.land_complete;
+
+
+
+
+
+
 }
 
 void Copter::init_simple_bearing()

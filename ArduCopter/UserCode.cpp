@@ -39,7 +39,7 @@ void Copter::userhook_SlowLoop()
 #ifdef USERHOOK_SUPERSLOWLOOP
 void Copter::userhook_SuperSlowLoop()
 {
-    // put your 1Hz code here
+    gcs().send_text(MAV_SEVERITY_INFO, " Parameter value - %d " , (int16_t)g.my_new_parameter );
 }
 #endif
 

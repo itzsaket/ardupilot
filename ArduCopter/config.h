@@ -72,6 +72,14 @@
    #   define RC_FAST_SPEED 490
 #endif
 
+/////
+#ifndef PARAM_FILE_V_DEFAULT
+ # define PARAM_FILE_V_DEFAULT      100     // default value for my new parameter
+#endif
+
+
+
+
 //////////////////////////////////////////////////////////////////////////////
 // Rangefinder
 //

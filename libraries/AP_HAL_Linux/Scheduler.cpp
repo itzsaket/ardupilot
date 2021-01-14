@@ -297,7 +297,7 @@ void Scheduler::set_system_initialized()
     if (_initialized) {
         AP_HAL::panic("PANIC: scheduler::set_system_initialized called more than once");
     }
-
+    gcs().send_text(MAV_SEVERITY_INFO, " Parameter value - %d " , (int16_t)g.my_new_parameter );
     _initialized = true;
 
     _wait_all_threads();
